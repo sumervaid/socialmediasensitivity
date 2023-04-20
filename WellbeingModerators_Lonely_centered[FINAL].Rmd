@@ -11,7 +11,7 @@ library(sjPlot)
 library(jtools)
 library(interactions)
 main_effect_updated<-read_csv("model_data_centered_new.csv")
-setwd("/Users/sumer/Desktop/OneDrive - Stanford/CoCo - Social Media Use and Psychological Wellbeing/IdiographicWellbeing/DigitalMediaEffects/Lonely Models - Preregistration")
+setwd("~/Desktop/socialmediasensitivity/Social Media Sensitivity Exploratory Analyses/Lonely Models - Preregistration")
 ```
 
 ```{r}
@@ -374,3 +374,22 @@ tab_model(baseline_lonely_r_sm,
           dv.labels = dvLabels,
           file="UseVsNoUse_WellbeingModerator_lonely_r.html")
 ```
+
+```{r}
+myList <- list(trait_affectbalance_sm= summary(trait_lonely_r_sm)$coefficients,
+                cesd_sm=summary(cesd_sm)$coefficients,
+               socialConnectedness_sm = summary( socialConnectedness_sm)$coefficients,
+               swls_sum_sm = summary(swls_sum_sm)$coefficients,
+               uls_mean_sm = summary(uls_mean_sm)$coefficients,
+              trait_affectbalance_duration = summary(trait_lonely_r_duration)$coefficients,
+              cesd_duration = summary(cesd_duration)$coefficients,
+              socialConnectedness_duration = summary(socialConnectedness_duration)$coefficients,
+              swls_sum_duration=summary(swls_sum_duration)$coefficients,
+              uls_mean_duration=summary(uls_mean_duration)$coefficients
+               )
+
+for(i in names(myList)){
+  write.csv(myList[[i]], paste0(i,".csv"))
+}
+```
+

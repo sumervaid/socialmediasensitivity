@@ -8,10 +8,10 @@ library(tidyverse)
 library(lme4)
 library(lmerTest)
 library(sjPlot)
-library(interactions)
 library(jtools)
-setwd("~/Desktop/socialmediasensitivity/Social Media Sensitivity Confirmatory Analyses/Confirmatory Modelling Scripts ")
-main_effect_updated<-read_csv("modelling_data_exploratory_confirmatory.csv")
+library(interactions)
+main_effect_updated<-read_csv("model_data_centered_new.csv")
+setwd("~/Desktop/socialmediasensitivity/Social Media Sensitivity Exploratory Analyses/Affect Balance- Preregistration ")
 ```
 
 ```{r}
@@ -366,3 +366,5 @@ for(i in names(myList)){
   write.csv(myList[[i]], paste0(i,".csv"))
 }
 ```
+
+

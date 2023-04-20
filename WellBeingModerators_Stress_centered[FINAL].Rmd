@@ -8,10 +8,10 @@ library(tidyverse)
 library(lme4)
 library(lmerTest)
 library(sjPlot)
-library(interactions)
 library(jtools)
-setwd("~/Desktop/socialmediasensitivity/Social Media Sensitivity Confirmatory Analyses/Confirmatory Modelling Scripts ")
-main_effect_updated<-read_csv("modelling_data_exploratory_confirmatory.csv")
+main_effect_updated<-read_csv("model_data_centered_new.csv")
+
+setwd("~/Desktop/socialmediasensitivity/Social Media Sensitivity Exploratory Analyses/Stressed Models - Preregistration ")
 ```
 
 ```{r}
@@ -62,6 +62,13 @@ trait_stressed_r_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                          REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(trait_stressed_r_sm)
 
+library(interactions)
+int<-sim_slopes(trait_stressed_r_sm, pred=MediaUse.scaled, modx=affect_balance_trait.z, jnplot = TRUE)
+plot<-interact_plot(trait_stressed_r_sm, pred=MediaUse.scaled, modx=affect_balance_trait.z) +xlab("Social Media Use (WP)") +ylab("Stress (R)")+theme_apa()+ggtitle("Affect Wellbeing Trait")
+plot
+ggsave("Affect Balance Trait Moderator - Use.png")
+int$jnplot
+ggsave("Affect Balance Trait Moderator - Use - JN Plot.png")
 
 
 mainEffect<-main_effect_updated %>%
@@ -101,6 +108,15 @@ socialConnectedness_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                              REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(socialConnectedness_sm)
 
+library(interactions)
+int<-sim_slopes(socialConnectedness_sm, pred=MediaUse.scaled, modx=socialConnectedness.z, jnplot = TRUE)
+plot<-interact_plot(socialConnectedness_sm, pred=MediaUse.scaled, modx=socialConnectedness.z) +xlab("Social Media Use (WP)") +ylab("Stres (R)")+theme_apa()+ggtitle("Social Connectedness Trait")
+plot
+ggsave("Social Connectedness Trait Moderator - Use.png")
+int$jnplot
+ggsave("Social Connectedness Trait Moderator - Use - JN Plot.png")
+
+
 mainEffect<-main_effect_updated %>%
   dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, socialConnectedness.z) %>%
   na.omit() %>% dplyr::distinct()
@@ -136,6 +152,12 @@ cesd_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
               REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(cesd_sm)
 
+int<-sim_slopes(cesd_sm, pred=MediaUse.scaled, modx=cesd.z, jnplot = TRUE)
+plot<-interact_plot(cesd_sm, pred=MediaUse.scaled, modx=cesd.z) +xlab("Social Media Use (WP)") +ylab("Stress (R)")+theme_apa()+ggtitle("Depression Trait")
+plot
+ggsave("Depression Trait Moderator - Use.png")
+int$jnplot
+ggsave("Depression Trait Moderator - Use - JN Plot.png")
 
 mainEffect<-main_effect_updated %>%
   dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, cesd.z) %>%
@@ -356,6 +378,7 @@ tab_model(baseline_stressed_r_sm,
           file="UseVsNoUse_WellbeingModerator_Stress.html")
 ```
 
+
 ```{r}
 myList <- list(trait_affectbalance_sm= summary(trait_stressed_r_sm)$coefficients,
                 cesd_sm=summary(cesd_sm)$coefficients,
@@ -373,3 +396,4 @@ for(i in names(myList)){
   write.csv(myList[[i]], paste0(i,".csv"))
 }
 ```
+
