@@ -1,0 +1,452 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(sjPlot)
+library(interactions)
+library(jtools)
+main_effect_updated<-read_csv("/Volumes/GoogleDrive/My Drive/Social media Sensitivity Pooled Analyses/Data Prep/modelling_data_pooled.csv")
+```
+
+```{r}
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, 
+                accepted, 
+                demog_age.z,
+                MediaUse.scaled, MediaUse.mean,
+                demog_sex_recoded,
+                weekend, 
+                nAct.cz,
+                surveys_per_id.z,
+                lagDur.cz,
+                overall_study_day,
+                lagged_accepted.cz) %>%
+  na.omit() %>% dplyr::distinct()
+
+baseline_personality_sm<-lmer(accepted ~ 1 +
+                                demog_sex_recoded+ 
+                                demog_age.z+
+                                surveys_per_id.z+
+                                overall_study_day+
+                                weekend+
+                                nAct.cz+
+                                lagDur.cz*lagged_accepted.cz+
+                                MediaUse.scaled+MediaUse.mean+
+                                (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                              REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(baseline_personality_sm)
+
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, 
+                accepted, 
+                demog_age.z,
+                socialmedia.cz, socialmedia.bp.z,
+                demog_sex_recoded,
+                weekend, 
+                nAct.cz,
+                surveys_per_id.z,
+                lagDur.cz,
+                overall_study_day,
+                lagged_accepted.cz) %>%
+  na.omit() %>% dplyr::distinct()
+
+baseline_personality_duration<-lmer(accepted~ 1 +
+                                      demog_sex_recoded+ 
+                                      demog_age.z+
+                                      surveys_per_id.z+
+                                      overall_study_day+
+                                      weekend+
+                                      nAct.cz+
+                                      lagDur.cz*lagged_accepted.cz+
+                                      socialmedia.cz+socialmedia.bp.z+
+                                      (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                                    REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(baseline_personality_duration)
+```
+
+
+```{r}
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, 
+                accepted, 
+                demog_age.z,
+                MediaUse.scaled, MediaUse.mean,
+                demog_sex_recoded,
+                weekend, 
+                nAct.cz,
+                surveys_per_id.z,
+                lagDur.cz,
+                overall_study_day,
+                lagged_accepted.cz,
+                extraversion.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+extraversion_sm<-lmer(accepted ~ 1 +
+                        demog_sex_recoded+ 
+                        demog_age.z+
+                        surveys_per_id.z+
+                        overall_study_day+
+                        weekend+
+                        nAct.cz+
+                        lagDur.cz*lagged_accepted.cz+
+                        MediaUse.mean*extraversion.z+MediaUse.scaled*extraversion.z+
+                        (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                      REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(extraversion_sm)
+
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, 
+                accepted, 
+                demog_age.z,
+                socialmedia.cz, socialmedia.bp.z,
+                demog_sex_recoded,
+                weekend, 
+                nAct.cz,
+                surveys_per_id.z,
+                lagDur.cz,
+                overall_study_day,
+                lagged_accepted.cz,
+                extraversion.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+extraversion_duration<-lmer(accepted ~ 1 +
+                              demog_sex_recoded+ 
+                              demog_age.z+
+                              surveys_per_id.z+
+                              overall_study_day+
+                              weekend+
+                              nAct.cz+
+                              lagDur.cz*lagged_accepted.cz+
+                              socialmedia.bp.z*extraversion.z+socialmedia.cz*extraversion.z+
+                              (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                            REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(extraversion_duration)
+```
+
+
+```{r}
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, 
+                accepted, 
+                demog_age.z,
+                MediaUse.scaled, MediaUse.mean,
+                demog_sex_recoded,
+                weekend, 
+                nAct.cz,
+                surveys_per_id.z,
+                lagDur.cz,
+                overall_study_day,
+                lagged_accepted.cz,
+                openness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+openness_sm<-lmer(accepted ~ 1 +
+                    demog_sex_recoded+ 
+                    demog_age.z+
+                    surveys_per_id.z+
+                    overall_study_day+
+                    weekend+
+                    nAct.cz+
+                    lagDur.cz*lagged_accepted.cz+
+                    MediaUse.mean*openness.z+MediaUse.scaled*openness.z+
+                    (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                  REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(openness_sm)
+
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, 
+                accepted, 
+                demog_age.z,
+                socialmedia.cz, socialmedia.bp.z,
+                demog_sex_recoded,
+                weekend, 
+                nAct.cz,
+                surveys_per_id.z,
+                lagDur.cz,
+                overall_study_day,
+                lagged_accepted.cz,
+                openness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+openness_duration<-lmer(accepted ~ 1 +
+                          demog_sex_recoded+ 
+                          demog_age.z+
+                          surveys_per_id.z+
+                          overall_study_day+
+                          weekend+
+                          nAct.cz+
+                          lagDur.cz*lagged_accepted.cz+
+                          socialmedia.bp.z*openness.z+socialmedia.cz*openness.z+
+                          (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                        REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(openness_duration)
+```
+
+
+```{r}
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, neuroticism.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+neuroticism_sm<-lmer(accepted ~ 1 +
+                       demog_sex_recoded+ 
+                       demog_age.z+
+                       surveys_per_id.z+
+                       overall_study_day+
+                       weekend+
+                       nAct.cz+
+                       lagDur.cz*lagged_accepted.cz+
+                       MediaUse.mean*neuroticism.z+MediaUse.scaled*neuroticism.z+
+                       (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                     REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(neuroticism_sm)
+
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, neuroticism.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+neuroticism_duration<-lmer(accepted ~ 1 +
+                             demog_sex_recoded+ 
+                             demog_age.z+
+                             surveys_per_id.z+
+                             overall_study_day+
+                             weekend+
+                             nAct.cz+
+                             lagDur.cz*lagged_accepted.cz+
+                             socialmedia.bp.z*neuroticism.z+socialmedia.cz*neuroticism.z+
+                             (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                           REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(neuroticism_duration)
+```
+
+```{r}
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, agreeableness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+agreeableness_sm<-lmer(accepted ~ 1 +
+                         demog_sex_recoded+ 
+                         demog_age.z+
+                         surveys_per_id.z+
+                         overall_study_day+
+                         weekend+
+                         nAct.cz+
+                         lagDur.cz*lagged_accepted.cz+
+                         MediaUse.mean*agreeableness.z+MediaUse.scaled*agreeableness.z+
+                         (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                       REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(agreeableness_sm)
+
+int<-sim_slopes(agreeableness_sm, pred=MediaUse.mean, modx=agreeableness.z, jnplot = TRUE)
+plot<-interact_plot(agreeableness_sm, pred=MediaUse.mean, modx=agreeableness.z) +xlab("Social Media Use Duration (BP)") +ylab("Accepted")+theme_apa()+ggtitle("Agreeableness")
+plot
+ggsave("Agreeableness Moderator - Use.png")
+jn_plot<-int$jnplot + xlab("Agreeableness") +ylab ("Slope of SMU and Accepted")+theme_apa()+ggtitle("JN Plot")
+jn_plot
+ggsave("Agreeableness Moderator - Duration - JN Plot.png")
+
+probe<-plot$data %>%
+  dplyr::filter(modx_group=="+ 1 SD" | modx_group=="- 1 SD")
+
+probe$trial<-recode_factor(probe$modx_group, `+ 1 SD`="High Agreeableness", `- 1 SD`="Low Agreeableness")
+s<-ggplot(data=probe, aes(x=MediaUse.mean, y=accepted, group=trial, colour=trial, linetype=trial))+geom_line(size=1.5)+theme_apa() + scale_color_manual(values=c('Grey','Black')) +xlab("Social Media Use Duration (BP)") + ylab("Accepted") + ylim(1,4)
+ggsave("Agreeableness Moderators (BP) of Social Media Use (BP) x Accepted.pdf", width=8, height=8)
+
+
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, agreeableness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+agreeableness_duration<-lmer(accepted ~ 1 +
+                               demog_sex_recoded+ 
+                               demog_age.z+
+                               surveys_per_id.z+
+                               overall_study_day+
+                               weekend+
+                               nAct.cz+
+                               lagDur.cz*lagged_accepted.cz+
+                               socialmedia.bp.z*agreeableness.z+socialmedia.cz*agreeableness.z+
+                               (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                             REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(agreeableness_duration)
+```
+
+```{r}
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, conscientiousness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+conscientiousness_sm<-lmer(accepted ~ 1 +
+                             demog_sex_recoded+ 
+                             demog_age.z+
+                             surveys_per_id.z+
+                             overall_study_day+
+                             weekend+
+                             nAct.cz+
+                             lagDur.cz*lagged_accepted.cz+
+                             MediaUse.mean*conscientiousness.z+MediaUse.scaled*conscientiousness.z+
+                             (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                           REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(conscientiousness_sm)
+
+mainEffectPersonality<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, conscientiousness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+conscientiousness_duration<-lmer(accepted ~ 1 +
+                                   demog_sex_recoded+ 
+                                   demog_age.z+
+                                   surveys_per_id.z+
+                                   overall_study_day+
+                                   weekend+
+                                   nAct.cz+
+                                   lagDur.cz*lagged_accepted.cz+
+                                   socialmedia.bp.z*conscientiousness.z+socialmedia.cz*conscientiousness.z+
+                                   (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                                 REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(conscientiousness_duration)
+```
+
+
+#### Table Module 
+
+```{r}
+openness.duration.summary<-summary(openness_duration)
+openness.use.summary<-summary(openness_sm)
+
+conscientiousness.duration.summary<-summary(conscientiousness_duration)
+conscientiousness.use.summary<-summary(conscientiousness_sm)
+
+extraversion.duration.summary<-summary(extraversion_duration)
+extraversion.use.summary<-summary(extraversion_sm)
+
+agreeableness.duration.summary<-summary(agreeableness_duration)
+agreeableness.use.summary<-summary(agreeableness_sm)
+
+neuroticism.duration.summary<-summary(neuroticism_duration)
+neuroticism.use.summary<-summary(neuroticism_sm)
+
+write.csv(openness.duration.summary$coefficients, "openness_duration_summary_accepted.csv")
+write.csv(openness.use.summary$coefficients, "openness_use_summary_accepted.csv")
+write.csv(conscientiousness.duration.summary$coefficients, "conscientiousness_duration_summary_accepted.csv")
+write.csv(conscientiousness.use.summary$coefficients, "conscientiousness_use_summary_accepted.csv")
+write.csv(extraversion.duration.summary$coefficients, "extraversion_duration_summary_accepted.csv")
+write.csv(extraversion.use.summary$coefficients, "extraversion_use_summary_accepted.csv")
+write.csv(agreeableness.duration.summary$coefficients, "agreeableness_duration_summary_accepted.csv")
+write.csv(agreeableness.use.summary$coefficients, "agreeableness_use_summary_accepted.csv")
+write.csv(neuroticism.duration.summary$coefficients, "neuroticism_duration_summary_accepted.csv")
+write.csv(neuroticism.use.summary$coefficients, "neuroticism_use_summary_accepted.csv")
+```
+
+
+
+
+```{r}
+predLabels=c("Intercept",
+             "Sex", 
+             "Age",
+             "Surveys Per Participant",
+             "Study Day", 
+             "Weekend", 
+             "Number of Activites", 
+             "Duration Since Last EMA", 
+             "Feelings of Being Accepted at t-1", 
+             "Social Media Use (vs Non-Use) (WP)", 
+             "Social Media Use (vs Non-Use) (BP)",
+             "Duration Since Last EMA x Feelings of Being Accepted  at t-1",
+             "Extraversion", 
+             "Social Media Use (vs Non-Use) (BP) x Extraversion (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Extraversion (BP)", 
+             "Openness",
+             "Social Media Use (vs Non-Use) (BP) x Openness (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Openness (BP)",
+             "Agreeableness",
+             "Social Media Use (vs Non-Use) (BP) x Agreeableness (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Agreeableness (BP)", 
+             "Neuroticism",
+             "Social Media Use (vs Non-Use) (BP) x Neuroticism (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Neuroticism (BP)",
+             "Conscientiousness",
+             "Social Media Use (vs Non-Use) (BP) x Conscientiousness (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Conscientiousness (BP)")
+
+dvLabels=c("Baseline Model",
+           "Extraversion Moderator",
+           "Openness Moderator",
+           "Agreeableness Moderator",
+           "Neuroticism Moderator",
+           "Conscientiousness Moderator")
+
+
+tab_model(baseline_personality_sm, 
+          extraversion_sm,
+          openness_sm,
+          agreeableness_sm, 
+          neuroticism_sm, 
+          conscientiousness_sm,
+          pred.labels = predLabels,
+          dv.labels = dvLabels,
+          file="UseVsNoUse_BigFive_Feelings of Being Accepted.html")
+
+predLabels=c("Intercept",
+             "Sex", 
+             "Age",
+             "Surveys Per Participant",
+             "Study Day", 
+             "Weekend", 
+             "Number of Activites", 
+             "Duration Since Last EMA", 
+             "Feelings of Being Accepted at t-1", 
+             "Social Media Use Duration (WP)", 
+             "Social Media Use Duration (BP)",
+             "Duration Since Last EMA x Feelings of Being Accepted at t-1",
+             "Extraversion", 
+             "Social Media Use Duration (BP) x Extraversion (BP)",
+             "Social Media Use Duration (WP) x Extraversion (BP)", 
+             "Openness",
+             "Social Media Use Duration (BP) x Openness (BP)",
+             "Social Media Use Duration (WP) x Openness (BP)",
+             "Agreeableness",
+             "Social Media Use Duration (BP) x Agreeableness (BP)",
+             "Social Media Use Duration (WP) x Agreeableness (BP)", 
+             "Neuroticism",
+             "Social Media Use Duration (BP) x Neuroticism (BP)",
+             "Social Media Use Duration (WP) x Neuroticism (BP)",
+             "Conscientiousness",
+             "Social Media Use Duration (BP) x Conscientiousness (BP)",
+             "Social Media Use Duration (WP) x Conscientiousness (BP)")
+
+
+dvLabels=c("Baseline Model",
+           "Extraversion Moderator",
+           "Openness Moderator",
+           "Agreeableness Moderator",
+           "Neuroticism Moderator",
+           "Conscientiousness Moderator")
+
+tab_model(baseline_personality_duration, 
+          extraversion_duration,
+          openness_duration,
+          agreeableness_duration, 
+          neuroticism_duration, 
+          conscientiousness_duration,
+          pred.labels = predLabels,
+          dv.labels = dvLabels,
+          file="Duration_BigFive_Feelings of Being Accepted.html")
+```
+
+
+
+

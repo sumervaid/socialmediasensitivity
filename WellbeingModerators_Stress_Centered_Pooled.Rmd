@@ -1,0 +1,476 @@
+---
+title: "WellbeingModerators_Stress_centered_pooled"
+output: html_document
+date: '2022-09-13'
+---
+
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(sjPlot)
+library(interactions)
+library(jtools)
+main_effect_updated<-read_csv("/Volumes/GoogleDrive/My Drive/Social media Sensitivity Pooled Analyses/Data Prep/modelling_data_pooled.csv")
+```
+
+```{r}
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day) %>%
+  na.omit() %>% dplyr::distinct()
+
+baseline_stressed_r_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                              demog_age.z+
+                              surveys_per_id.z+
+                              overall_study_day+
+                              weekend+
+                              nAct.cz+
+                              lagDur.cz*laggedStress.cz+
+                              MediaUse.scaled+MediaUse.mean+ 
+                              (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                            REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day) %>%
+  na.omit() %>% dplyr::distinct()
+
+baseline_stressed_r_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                                    demog_age.z+
+                                    surveys_per_id.z+
+                                    overall_study_day+
+                                    weekend+
+                                    nAct.cz+
+                                    lagDur.cz*laggedStress.cz+
+                                    socialmedia.cz+socialmedia.bp.z+
+                                    (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                                  REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,  demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, affect_balance_trait.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+trait_affect_balance_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                           demog_age.z+
+                           surveys_per_id.z+
+                           overall_study_day+
+                           weekend+
+                           nAct.cz+
+                           lagDur.cz*laggedStress.cz+
+                           MediaUse.mean*affect_balance_trait.z+MediaUse.scaled*affect_balance_trait.z+
+                           (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                         REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(trait_affect_balance_sm)
+
+
+
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, affect_balance_trait.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+trait_affect_balance_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                                 demog_age.z+
+                                 surveys_per_id.z+
+                                 overall_study_day+
+                                 weekend+
+                                 nAct.cz+
+                                 lagDur.cz*laggedStress.cz+
+                                 socialmedia.bp.z*affect_balance_trait.z+socialmedia.cz*affect_balance_trait.z+
+                                 (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                               REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(trait_affect_balance_duration)
+```
+
+
+```{r}
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, socialConnectedness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+socialConnectedness_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                               demog_age.z+
+                               surveys_per_id.z+
+                               overall_study_day+
+                               weekend+
+                               nAct.cz+
+                               lagDur.cz*laggedStress.cz+
+                               MediaUse.mean*socialConnectedness.z+MediaUse.scaled*socialConnectedness.z+
+                               (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                             REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(socialConnectedness_sm)
+
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, socialConnectedness.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+socialConnectedness_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                                     demog_age.z+
+                                     surveys_per_id.z+
+                                     overall_study_day+
+                                     weekend+
+                                     nAct.cz+
+                                     lagDur.cz*laggedStress.cz+
+                                     socialmedia.bp.z*socialConnectedness.z+socialmedia.cz*socialConnectedness.z+
+                                     (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                                   REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(socialConnectedness_duration)
+```
+
+```{r}
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, cesd.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+cesd_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                demog_age.z+
+                surveys_per_id.z+
+                overall_study_day+
+                weekend+
+                nAct.cz+
+                lagDur.cz*laggedStress.cz+
+                MediaUse.mean*cesd.z+MediaUse.scaled*cesd.z+
+                (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+              REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(cesd_sm)
+
+
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, cesd.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+descr<-main_effect_updated %>%
+  psych::describe()
+
+
+cesd_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                      demog_age.z+
+                      surveys_per_id.z+
+                      overall_study_day+
+                      weekend+
+                      nAct.cz+
+                      lagDur.cz*laggedStress.cz+
+                      socialmedia.bp.z*cesd.z+socialmedia.cz*cesd.z+
+                      (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                    REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(cesd_duration)
+
+int<-sim_slopes(cesd_duration, pred=socialmedia.bp.z, modx=cesd.z, jnplot = TRUE)
+plot<-interact_plot(cesd_duration, pred=socialmedia.bp.z, modx=cesd.z) +xlab("Social Media Use Duration (BP)") +ylab("Stress (R)")+theme_apa()+ggtitle("Depression Trait")
+plot
+ggsave("Depression Trait Moderator - Duration (BP).png")
+jnplot<-int$jnplot + xlab("Depression Trait") + ylab("Slope of SMU and Stress") +ggtitle("JN Plot")
+ggsave("Interact: Depression Trait Moderator - Duration - JN Plot (BP).png")
+
+probe<-plot$data %>%
+  dplyr::filter(modx_group=="+ 1 SD" | modx_group=="- 1 SD")
+
+probe$trial<-recode_factor(probe$modx_group, `+ 1 SD`="High Trait Depression", `- 1 SD`="Low Trait Depression")
+s<-ggplot(data=probe, aes(x=socialmedia.bp.z, y=stressed_r, group=trial, colour=trial, linetype=trial))+geom_line(size=1.5)+theme_apa() + scale_color_manual(values=c('Grey','Black')) +xlab("Social Media Use Duration (BP)") + ylab("Stressed (R)") + ylim(1,4)
+ggsave("Depression Moderators (BP) of Social Media Use (BP) x Stress.pdf", width=8, height=8)
+
+
+```
+
+```{r}
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, swls_sum.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+swls_sum_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                    demog_age.z+
+                    surveys_per_id.z+
+                    overall_study_day+
+                    weekend+
+                    nAct.cz+
+                    lagDur.cz*laggedStress.cz+
+                    MediaUse.mean*swls_sum.z+MediaUse.scaled*swls_sum.z+
+                    (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                  REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(swls_sum_sm)
+
+library(interactions)
+
+int<-sim_slopes(swls_sum_sm, pred=MediaUse.mean, modx=swls_sum.z, jnplot = TRUE)
+plot<-interact_plot(swls_sum_sm, pred=MediaUse.scaled, modx=swls_sum.z) +xlab("Social Media Use (BP)") +ylab("Stress (R)")+theme_apa()+ggtitle("Satisfaction with Life Trait")
+plot
+ggsave("Interact: Satisfaction with Life Trait Moderator - BP Use.png")
+jn_plot<-int$jnplot +xlab("Social Connectedness Trait") + ylab("Slope of SMU and Stress")+ggtitle("JN Plot")
+ggsave("Satisfaction with Life Trait Moderator - BP Use - JN Plot.png")
+
+probe<-plot$data %>%
+  dplyr::filter(modx_group=="+ 1 SD" | modx_group=="- 1 SD")
+
+probe$trial<-recode_factor(probe$modx_group, `+ 1 SD`="High Satisfaction With Life Trait", `- 1 SD`="Low Satisfaction With Life Trait")
+s<-ggplot(data=probe, aes(x=MediaUse.mean, y=stressed_r, group=trial, colour=trial, linetype=trial))+geom_line(size=1.5)+theme_apa() + scale_color_manual(values=c('Grey','Black')) +xlab("Social Media Use Duration (BP)") + ylab("Stressed (R)") + ylim(1,4)
+
+ggsave("SWLS Moderators (BP) of Social Media Use (BP) x Stress.pdf", width=8, height=8)
+
+
+
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, swls_sum.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+swls_sum_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                          demog_age.z+
+                          surveys_per_id.z+
+                          overall_study_day+
+                          weekend+
+                          nAct.cz+
+                          lagDur.cz*laggedStress.cz+
+                          socialmedia.bp.z*swls_sum.z+socialmedia.cz*swls_sum.z+
+                          (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                        REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(swls_sum_duration)
+```
+
+```{r}
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, uls_mean.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+uls_mean_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                    demog_age.z+
+                    surveys_per_id.z+
+                    overall_study_day+
+                    weekend+
+                    nAct.cz+
+                    lagDur.cz*laggedStress.cz+
+                    MediaUse.mean*uls_mean.z+MediaUse.scaled*uls_mean.z+
+                    (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                  REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(uls_mean_sm)
+
+int<-sim_slopes(uls_mean_sm, pred=MediaUse.mean, modx=uls_mean.z, jnplot = TRUE)
+plot<-interact_plot(uls_mean_sm, pred=MediaUse.scaled, modx=uls_mean.z, interval=TRUE) +xlab("Social Media Use (BP)") +ylab("Stress (R)")+theme_apa()+ggtitle("Loneliness Trait")
+plot
+ggsave("Interact:Loneliness Trait Moderator - BP Use.png")
+jn_plot<-int$jnplot+xlab("Social Media Use Frequency (BP)") + ylab("Stress (R)") + ggtitle("JN Plot")
+ggsave("Loneliness Trait Moderator - BP Use - JN Plot.png")
+
+probe<-plot$data %>%
+  dplyr::filter(modx_group=="+ 1 SD" | modx_group=="- 1 SD")
+
+probe$trial<-recode_factor(probe$modx_group, `+ 1 SD`="High Trait Loneliness", `- 1 SD`="Low Trait Loneliness")
+
+s<-ggplot(data=probe, aes(x=MediaUse.scaled, y=stressed_r , group=trial, colour=trial, fill=trial))+geom_line(size=1.5)+geom_ribbon(aes(ymin = ymin, ymax = ymax, group=trial, fill=trial), alpha=0.3)+xlab("Use vs Non-Use") + ylab("Stress") + coord_cartesian(
+  ylim = c(2.7, 3.1),
+  expand = TRUE,
+  default = FALSE)+ scale_x_continuous(breaks=seq(-1,1, 2),labels=c("Non-Use", "Use")) +
+  theme_apa()+theme(axis.text = element_text(size = 30)) + scale_color_manual(values=c("#972D15", "#5BBCD6")) + scale_fill_manual(values=c("#972D15", "#5BBCD6"))+ theme(axis.text = element_text(size = 30), axis.title.x = element_text(size=30), axis.title.y=element_text(size=30), legend.text = element_text(size=30), legend.position = c(.98, .98), legend.justification = c("right", "top"),legend.box.just = "right", legend.margin = margin(6, 6, 6, 6))
+
+ggsave("LinePlots: Loneliness Moderators (BP) of Social Media Use (WP) x Stress.pdf", width=10, height=10)
+
+
+int<-sim_slopes(uls_mean_sm, pred=MediaUse.scaled, modx=uls_mean.z, jnplot = TRUE)
+plot<-interact_plot(uls_mean_sm, pred=MediaUse.scaled, modx=uls_mean.z) +xlab("Social Media Use (WP)") +ylab("Stress (R)")+theme_apa()+ggtitle("Loneliness Trait")
+plot
+ggsave("Interact: Loneliness Trait Moderator - WP Use.png")
+jnplot<-int$jnplot+xlab("Loneliness Trait")+ylab("Slope of Social Media Use and Loneliness") + ggtitle("JN Plot")
+ggsave("Loneliness Trait Moderator - WP Use - JN Plot.png")
+
+probe<-plot$data %>%
+  dplyr::filter(modx_group=="+ 1 SD" | modx_group=="- 1 SD")
+
+probe$trial<-recode_factor(probe$modx_group, `+ 1 SD`="High Trait Loneliness", `- 1 SD`="Low Trait Loneliness")
+s<-ggplot(data=probe, aes(x=MediaUse.scaled, y=stressed_r, group=trial, colour=trial, linetype=trial))+geom_line(size=1.5)+theme_apa() + scale_color_manual(values=c('Grey','Black')) +xlab("Social Media Use (vs Non-Use) (WP)") + ylab("Stressed (R)") + ylim(1,4) + scale_x_continuous(breaks=seq(-1,1, 2),labels=c("Before", "After")) + theme_apa()+theme(axis.text = element_text(size = 15))
+
+ggsave("Loneliness Moderators (BP) of Social Media Use (WP) x Stress.pdf", width=8, height=8)
+
+probe2<-plot$data %>%
+  dplyr::filter(modx_group=="+ 1 SD" | modx_group=="- 1 SD") %>%
+  dplyr::mutate(
+    socialmedia=case_when(
+    MediaUse.scaled<0 ~ "Before",
+    MediaUse.scaled>0 ~ "After"
+  ), context=case_when(
+    modx_group=="+ 1 SD" ~ "Lonely",
+    modx_group== "- 1 SD" ~ "Not Lonely"
+  )) %>%
+  dplyr::group_by(context, socialmedia) %>%
+  dplyr::summarise(
+    wb=mean(stressed_r, na.rm=TRUE)) %>%
+  arrange(desc(socialmedia))
+
+probe2$socialmedia<-factor(probe2$socialmedia, levels=c("After", "Before"))
+probe2$socialmedia<-fct_reorder(probe2$socialmedia, desc(probe2$socialmedia))
+probe2$context<-factor(probe2$context, levels=c("Lonely", "Not Lonely"))
+#probe2$context<-fct_reorder(probe2$context, desc(probe2$context))
+
+s<-ggplot(data=probe2, aes(x=context, y=wb, group=socialmedia, fill=socialmedia))+
+  geom_col(width=0.5, position=position_dodge(), color="black")+theme_apa() + 
+  scale_fill_manual(values=c('darkgrey','white')) + xlab(" ") + ylab(" ") + theme(axis.text = element_text(size = 20),  axis.title=element_text(size=20,face="bold"))  +  geom_errorbar(aes(ymin=wb-sd(wb, na.rm=TRUE), ymax=wb+sd(wb, na.rm=TRUE)), width=.2, position=position_dodge(.5)) + coord_cartesian(
+    ylim = c(2.5,3),
+    expand = TRUE,
+    default = FALSE) 
+ggsave("Loneliness Moderators (WP) - Bar Plot.pdf", height=8, width=8)
+
+
+mainEffect<-main_effect_updated %>%
+  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, uls_mean.z) %>%
+  na.omit() %>% dplyr::distinct()
+
+
+uls_mean_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
+                          demog_age.z+
+                          surveys_per_id.z+
+                          overall_study_day+
+                          weekend+
+                          nAct.cz+
+                          lagDur.cz*laggedStress.cz+
+                          socialmedia.bp.z*uls_mean.z+socialmedia.cz*uls_mean.z+
+                          (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                        REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
+summary(uls_mean_duration)
+
+
+int<-sim_slopes(uls_mean_duration, pred=socialmedia.bp.z, modx=uls_mean.z, jnplot = TRUE)
+plot<-interact_plot(uls_mean_duration, pred=socialmedia.bp.z, modx=uls_mean.z) +xlab("Social Media Use Duration (BP)") +ylab("Stress (R)")+theme_apa()+ggtitle("Loneliness Trait")
+plot
+ggsave("Interact: Loneliness Trait Moderator - BP Duration.png")
+jnplot<-int$jnplot+xlab("Loneliness Trait")+ylab("Slope of Social Media Use (BP) and Loneliness") + ggtitle("JN Plot")
+ggsave("Loneliness Trait Moderator - BP Duration - JN Plot.png")
+
+probe<-plot$data %>%
+  dplyr::filter(modx_group=="+ 1 SD" | modx_group=="- 1 SD")
+
+probe$trial<-recode_factor(probe$modx_group, `+ 1 SD`="High Trait Loneliness", `- 1 SD`="Low Trait Loneliness")
+s<-ggplot(data=probe, aes(x=socialmedia.bp.z, y=stressed_r, group=trial, colour=trial, linetype=trial))+geom_line(size=1.5)+theme_apa() + scale_color_manual(values=c('Grey','Black')) +xlab("Social Media Use Duration (BP)") + ylab("Stressed (R)") + ylim(1,4) +  theme_apa()+theme(axis.text = element_text(size = 15))
+
+ggsave("Loneliness Moderators (BP) of Social Media Duration (BP) x Stress.pdf", width=8, height=8)
+```
+
+```{r}
+cesd.duration.summary<-summary(cesd_duration)
+cesd.use.summary<-summary(cesd_sm)
+
+socialConnectedness.duration.summary<-summary(socialConnectedness_duration)
+socialConnectedness.use.summary<-summary(socialConnectedness_sm)
+
+swls.duration.summary<-summary(swls_sum_duration)
+swls.use.summary<-summary(swls_sum_sm)
+
+affectbalance.duration.summary<-summary(trait_affect_balance_duration)
+affectbalance.use.summary<-summary(trait_affect_balance_sm)
+
+uls.duration.summary<-summary(uls_mean_duration)
+uls.use.summary<-summary(uls_mean_sm)
+
+write.csv(cesd.duration.summary$coefficients, "cesd_duration_summary_stress.csv")
+write.csv(cesd.use.summary$coefficients, "cesd_use_summary_stress.csv")
+write.csv(socialConnectedness.duration.summary$coefficients, "sc_duration_summary_stress.csv")
+write.csv(socialConnectedness.use.summary$coefficients, "sc_use_summary_stress.csv")
+write.csv(swls.duration.summary$coefficients, "swls_duration_summary_stress.csv")
+write.csv(swls.use.summary$coefficients, "swls_use_summary_stress.csv")
+write.csv(affectbalance.duration.summary$coefficients, "affect_balance_duration_summary_stress.csv")
+write.csv(affectbalance.use.summary$coefficients, "affect_balance_use_summary_stress.csv")
+write.csv(uls.duration.summary$coefficients, "lonely_duration_summary_stress.csv")
+write.csv(uls.use.summary$coefficients, "lonely_use_summary_stress.csv")
+```
+
+
+### Table Module 
+
+```{r}
+predLabels=c("Intercept",
+             "Sex", 
+             "Age",
+             "Surveys Per Participant",
+             "Study Day", 
+             "Weekend", 
+             "Number of Activites", 
+             "Duration Since Last EMA", 
+             "Wellbeing at t-1", 
+             "Social Media Use Duration (WP)",
+             "Social Media Use Duration (BP)",
+             "Duration Since Last EMA x Wellbeing at t-1",
+             "Trait Affect Balance", 
+             "Social Media Use Duration (BP) x Affect Balance Trait (BP)", 
+             "Social Media Use Duration (WP) x Affect Balance Trait (BP)", 
+             "Depression",
+             "Social Media Use Duration (BP) x Depression (BP)",
+             "Social Media Use Duration (WP) x Depression (BP)",
+             "Social Connectedness", 
+             "Social Media Use Duration (BP) x Social Connectedness (BP)",
+             "Social Media Use Duration (WP) x Social Connectedness (BP)", 
+             "Satisfaction With Life", 
+             "Social Media Use Duration (BP) x Satisfaction with Life (BP)",
+             "Social Media Use Duration (WP) x Satisfaction with Life (BP)",
+             "Loneliness",
+             "Social Media Use Duration (BP) x Loneliness (BP)",
+             "Social Media Use Duration (WP) x Loneliness (BP)")
+
+dvLabels=c("Baseline Model",
+           "Trait Wellbeing Moderator",
+           "Depression Moderator",
+           "Social Connectedness Moderator",
+           "Satisfaction with Life Moderator",
+           "Loneliness Moderator")
+
+tab_model(baseline_stressed_r_duration, 
+          trait_stressed_r_duration,
+          cesd_duration,
+          socialConnectedness_duration, 
+          swls_sum_duration, 
+          uls_mean_duration,
+          pred.labels = predLabels,
+          dv.labels = dvLabels,
+          file="Duration_WellbeingModerators_Stress.html")
+
+
+predLabels=c("Intercept",
+             "Sex", 
+             "Age",
+             "Surveys Per Participant",
+             "Study Day", 
+             "Weekend", 
+             "Number of Activites", 
+             "Duration Since Last EMA", 
+             "Wellbeing at t-1", 
+             "Social Media Use (vs Non-Use) (WP)",
+             "Social Media Use (vs Non-Use) (BP)",
+             "Duration Since Last EMA x Wellbeing at t-1",
+             "Trait Affect Balance", 
+             "Social Media Use (vs Non-Use) (BP) x Affect Balance Trait (BP)", 
+             "Social Media Use (vs Non-Use) (WP) x Affect Balance Trait (BP)", 
+             "Depression",
+             "Social Media Use (vs Non-Use) (BP) x Depression (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Depression (BP)",
+             "Social Connectedness", 
+             "Social Media Use (vs Non-Use) (BP) x Social Connectedness (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Social Connectedness (BP)", 
+             "Satisfaction With Life", 
+             "Social Media Use (vs Non-Use) (BP) x Satisfaction with Life (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Satisfaction with Life (BP)",
+             "Loneliness",
+             "Social Media Use (vs Non-Use) (BP) x Loneliness (BP)",
+             "Social Media Use (vs Non-Use) (WP) x Loneliness (BP)")
+
+dvLabels=c("Baseline Model",
+           "Trait Wellbeing Moderator",
+           "Depression Moderator",
+           "Social Connectedness Moderator",
+           "Satisfaction with Life Moderator",
+           "Loneliness Moderator")
+
+tab_model(baseline_stressed_r_sm, 
+          trait_stressed_r_sm,
+          cesd_sm,
+          socialConnectedness_sm, 
+          swls_sum_sm, 
+          uls_mean_sm,
+          pred.labels = predLabels,
+          dv.labels = dvLabels,
+          file="UseVsNoUse_WellbeingModerator_Stress.html")
+```
