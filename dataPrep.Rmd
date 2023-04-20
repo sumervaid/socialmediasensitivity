@@ -21,7 +21,7 @@ library(sjPlot)
 library(recipes)
 library(lubridate)
 library(jtools)
-setwd("~/Desktop/OneDrive - Stanford/CoCo - Social Media Use and Psychological Wellbeing/IdiographicWellbeing/DigitalMediaEffects/Data Prep - Preregistration")
+setwd("/Volumes/GoogleDrive/My Drive/Social Media Sensitivity Exploratory Analyses/Data Prep - Preregistration")
 
 ema_long<-read.csv("04_ema_survey_coco_ut1.csv")
 demogPers<-read_csv("DemogPersFall.csv")
@@ -380,6 +380,7 @@ mlm_data<-mlm_data %>%
   dplyr::mutate(sum=sum(wb_sm_naCheck, na.rm=TRUE)) %>%
   dplyr::filter(sum>19)
 
+
 count.ppt_postFilter<-length(unique(mlm_data$id))
 ppt_postFilter<-unique(mlm_data$id)
 
@@ -469,6 +470,22 @@ mlm_data$affect_balance_trait <- mlm_data$HappyTrait - mlm_data$negative_affect_
 ### Step 5: Filter by Age and Sex
 
 ```{r}
+nObsSexFilter<-mlm_data %>%
+  filter(demog_sex==3) %>%
+  select(id, demog_sex)
+
+nPPtsSexFilter<-nObsSexFilter %>%
+  select(id) %>%
+  distinct()
+
+nObsAgeFilter<-mlm_data %>%
+  filter(demog_age>=25) %>%
+  select(id, demog_age)
+
+nPPtsAgeFilter<-nObsAgeFilter %>%
+  select(id) %>%
+  distinct()
+
 count.obs_preAgeSexFilter<-length(mlm_data$id)
 count.ppt_preAgeSexFilter<-length(unique(mlm_data$id))
 ppt_preAgeSexFilter<-unique(mlm_data$id)
@@ -574,7 +591,8 @@ main_effect_updated<- mlm_data %>%
                 StartDateConvert,
                 home,
                 alone,
-                laggedLonely) %>%
+                laggedLonely, 
+                socialmedia) %>%
   dplyr::mutate(
     extraversion.z=scale(Extraversion, center=TRUE, scale=FALSE),
     openness.z=scale(Openness, center=TRUE, scale=FALSE),
@@ -599,6 +617,23 @@ main_effect_updated<- mlm_data %>%
 
 i<-main_effect_updated %>%
   dplyr::select(id, StartDateConvert, lonely_r, laggedLonely)
+
+
+describe.level1<-main_effect_updated %>%
+  dplyr::select(id, socialmedia, lonely_r, stressed_r, accepted, affect_balance, MediaUse, closeTies, distantTies, familyTies,home_social,home_work, home_transit, home_nature,  home_gym,home_religion, home_study, home, alone) %>%
+  dplyr::group_by(id) %>%
+  dplyr::summarise(socialmediaDuration=mean(socialmedia, na.rm=TRUE),
+                   lonelyMean=mean(as.numeric(as.character(lonely_r)), na.rm=TRUE),
+                   stressedMean=mean(as.numeric(as.character(stressed_r)), na.rm=TRUE),
+                   acceptedMean=mean(as.numeric(as.character(accepted)), na.rm=TRUE),
+                   affectbalanceMean=mean(as.numeric(as.character(affect_balance)), na.rm=TRUE),
+                   mediaUseMean=mean(as.numeric(as.character(MediaUse)), na.rm=TRUE)) %>%
+  dplyr::ungroup() %>%
+  dplyr::summarise(socialmediaDurationWP=mean(socialmediaDuration, na.rm=TRUE),
+                   lonelyWP=mean(lonelyMean, na.rm=TRUE),
+                   stressedWP=mean(stressedMean, na.rm=TRUE),
+                   acceptedWP=mean(acceptedMean, na.rm=TRUE),
+                   affectbalanceWP=mean(affectbalanceMean, na.rm=TRUE))
 ```
 
 
@@ -712,8 +747,10 @@ main_effect_updated$home_religionNumeric.scaled<-main_effect_updated$home_religi
 main_effect_updated$home_religion.grandmean<-mean(main_effect_updated$home_religionNumeric, na.rm=TRUE)
 main_effect_updated$home_religionNumeric.mean<-main_effect_updated$home_religionNumeric.mean - main_effect_updated$home_religion.grandmean
 
+main_effect_updated$sample<-0
+
 #save(main_effect_updated, file="modelData_centered.RData")
-write.csv(main_effect_updated, file="modelling_data_exploratory_replicate.csv")
+#write.csv(main_effect_updated, file="modelling_data_exploratory.csv")
 ```
 
 
