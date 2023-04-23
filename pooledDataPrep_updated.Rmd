@@ -1062,6 +1062,49 @@ plot1_data<-plot_data %>%
   ) %>%
   dplyr::distinct() 
 
+context_plot_data<-plot_data %>%
+  pivot_longer(
+    cols = home_social:home,
+    names_to = "Context",
+    values_to="ContextVals"
+  ) %>%
+    dplyr::filter(
+    ContextVals==1
+  )  %>% group_by(Context, sample) %>%
+  transmute(
+    sample, contextValsSum=sum(ContextVals, na.rm=TRUE)
+  ) %>%
+  dplyr::distinct()  %>%
+  ungroup %>%
+  group_by(sample) %>%
+  mutate(
+    contextValsProp=(contextValsSum/sum(contextValsSum))*100
+  )
+
+context_plot_data$sampleFactor<-as.factor(context_plot_data$sample)
+
+context_plot_data$Context[context_plot_data$Context == 'alone'] <- 'Alone'
+context_plot_data$Context[context_plot_data$Context == 'closeTies'] <- 'Close Ties'
+context_plot_data$Context[context_plot_data$Context == 'distantTies'] <- 'Distant Ties'
+context_plot_data$Context[context_plot_data$Context == 'familyTies'] <- 'Family Ties'
+context_plot_data$Context[context_plot_data$Context == 'home'] <- 'Home'
+context_plot_data$Context[context_plot_data$Context == 'home_gym'] <- 'Gym'
+context_plot_data$Context[context_plot_data$Context == 'home_nature'] <- 'Nature'
+context_plot_data$Context[context_plot_data$Context == 'home_religion'] <- 'Religion'
+context_plot_data$Context[context_plot_data$Context == 'home_social'] <- 'Social Places'
+context_plot_data$Context[context_plot_data$Context == 'home_study'] <- 'Study Places'
+context_plot_data$Context[context_plot_data$Context == 'home_transit'] <- 'Transit'
+context_plot_data$Context[context_plot_data$Context == 'home_work'] <- 'Workplaces'
+
+
+
+p2<-ggplot(data=context_plot_data, aes(x=reorder(Context, +contextValsProp), y=contextValsProp, group=sampleFactor, color=sampleFactor)) +  geom_point(size=8)+theme_apa() + xlab("Context") + ylab("Proportion") + theme(
+    axis.text.x = element_text(size=20, angle=90, vjust=0.5, hjust=1), 
+    axis.text.y=element_text(size=25),
+    axis.title.y=element_text(size=25), 
+    axis.title.x=element_text(size=25)
+  )
+
 plot1_data$Context[plot1_data$Context == 'alone'] <- 'Alone'
 plot1_data$Context[plot1_data$Context == 'closeTies'] <- 'Close Ties'
 plot1_data$Context[plot1_data$Context == 'distantTies'] <- 'Distant Ties'
@@ -1296,7 +1339,8 @@ main_effect_updated<- mlm_data %>%
                 StartDateConvert,
                 home,
                 alone,
-                laggedLonely) %>%
+                laggedLonely,
+                sample) %>%
   dplyr::mutate(
     extraversion.z=scale(Extraversion, center=TRUE, scale=FALSE),
     openness.z=scale(Openness, center=TRUE, scale=FALSE),
@@ -1431,10 +1475,9 @@ main_effect_updated$home_religionNumeric.scaled<-main_effect_updated$home_religi
 main_effect_updated$home_religion.grandmean<-mean(main_effect_updated$home_religionNumeric, na.rm=TRUE)
 main_effect_updated$home_religionNumeric.mean<-main_effect_updated$home_religionNumeric.mean - main_effect_updated$home_religion.grandmean
 
-main_effect_updated$sample<-1
 
-save(main_effect_updated, file="modelData_centered.RData")
-write.csv(main_effect_updated,file="modelling_data_pooled.csv")
+#save(main_effect_updated, file="modelData_centered.RData")
+#write.csv(main_effect_updated,file="modelling_data_pooled.csv")
 ```
 
 
