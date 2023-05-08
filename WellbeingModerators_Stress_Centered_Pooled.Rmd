@@ -4,24 +4,20 @@ output: html_document
 date: '2022-09-13'
 ---
 
----
-title: "R Notebook"
-output: html_notebook
----
-
 ```{r}
 library(tidyverse)
 library(lme4)
 library(lmerTest)
 library(sjPlot)
-library(interactions)
 library(jtools)
-main_effect_updated<-read_csv("/Volumes/GoogleDrive/My Drive/Social media Sensitivity Pooled Analyses/Data Prep/modelling_data_pooled.csv")
+library(interactions)
+setwd("~/Desktop/socialmediasensitivity/Social media Sensitivity Pooled Analyses/Pooled Analysis  - Dispositions/Affect Balance")
+main_effect_updated<-read_csv("modelling_data_pooled_updated.csv")
 ```
 
 ```{r}
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day) %>%
   na.omit() %>% dplyr::distinct()
 
 baseline_stressed_r_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
@@ -32,11 +28,11 @@ baseline_stressed_r_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                               nAct.cz+
                               lagDur.cz*laggedStress.cz+
                               MediaUse.scaled+MediaUse.mean+ 
-                              (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                              sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
                             REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day) %>%
   na.omit() %>% dplyr::distinct()
 
 baseline_stressed_r_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
@@ -47,11 +43,11 @@ baseline_stressed_r_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                                     nAct.cz+
                                     lagDur.cz*laggedStress.cz+
                                     socialmedia.cz+socialmedia.bp.z+
-                                    (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                                    sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
                                   REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,  demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, affect_balance_trait.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,  demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, affect_balance_trait.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -63,14 +59,14 @@ trait_affect_balance_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                            nAct.cz+
                            lagDur.cz*laggedStress.cz+
                            MediaUse.mean*affect_balance_trait.z+MediaUse.scaled*affect_balance_trait.z+
-                           (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                           sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
                          REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(trait_affect_balance_sm)
 
 
 
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, affect_balance_trait.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, affect_balance_trait.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -82,7 +78,7 @@ trait_affect_balance_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                                  nAct.cz+
                                  lagDur.cz*laggedStress.cz+
                                  socialmedia.bp.z*affect_balance_trait.z+socialmedia.cz*affect_balance_trait.z+
-                                 (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                                 sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
                                REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(trait_affect_balance_duration)
 ```
@@ -90,7 +86,7 @@ summary(trait_affect_balance_duration)
 
 ```{r}
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, socialConnectedness.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, socialConnectedness.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -102,12 +98,12 @@ socialConnectedness_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                                nAct.cz+
                                lagDur.cz*laggedStress.cz+
                                MediaUse.mean*socialConnectedness.z+MediaUse.scaled*socialConnectedness.z+
-                               (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                               sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
                              REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(socialConnectedness_sm)
 
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, socialConnectedness.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, socialConnectedness.z) %>%
   na.omit() %>% dplyr::distinct()
 
 socialConnectedness_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+    
@@ -118,14 +114,14 @@ socialConnectedness_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                                      nAct.cz+
                                      lagDur.cz*laggedStress.cz+
                                      socialmedia.bp.z*socialConnectedness.z+socialmedia.cz*socialConnectedness.z+
-                                     (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                                     sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
                                    REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(socialConnectedness_duration)
 ```
 
 ```{r}
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, cesd.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, cesd.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -137,13 +133,13 @@ cesd_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                 nAct.cz+
                 lagDur.cz*laggedStress.cz+
                 MediaUse.mean*cesd.z+MediaUse.scaled*cesd.z+
-                (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
               REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(cesd_sm)
 
 
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, cesd.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, cesd.z) %>%
   na.omit() %>% dplyr::distinct()
 
 descr<-main_effect_updated %>%
@@ -158,7 +154,7 @@ cesd_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                       nAct.cz+
                       lagDur.cz*laggedStress.cz+
                       socialmedia.bp.z*cesd.z+socialmedia.cz*cesd.z+
-                      (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                      sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
                     REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(cesd_duration)
 
@@ -181,7 +177,7 @@ ggsave("Depression Moderators (BP) of Social Media Use (BP) x Stress.pdf", width
 
 ```{r}
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, swls_sum.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, swls_sum.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -193,7 +189,7 @@ swls_sum_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                     nAct.cz+
                     lagDur.cz*laggedStress.cz+
                     MediaUse.mean*swls_sum.z+MediaUse.scaled*swls_sum.z+
-                    (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                    sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
                   REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(swls_sum_sm)
 
@@ -217,7 +213,7 @@ ggsave("SWLS Moderators (BP) of Social Media Use (BP) x Stress.pdf", width=8, he
 
 
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, swls_sum.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, swls_sum.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -229,14 +225,14 @@ swls_sum_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                           nAct.cz+
                           lagDur.cz*laggedStress.cz+
                           socialmedia.bp.z*swls_sum.z+socialmedia.cz*swls_sum.z+
-                          (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                          sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
                         REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(swls_sum_duration)
 ```
 
 ```{r}
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, uls_mean.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, MediaUse.scaled, MediaUse.mean,   demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, uls_mean.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -248,7 +244,7 @@ uls_mean_sm<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                     nAct.cz+
                     lagDur.cz*laggedStress.cz+
                     MediaUse.mean*uls_mean.z+MediaUse.scaled*uls_mean.z+
-                    (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
+                    sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffect,
                   REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(uls_mean_sm)
 
@@ -318,7 +314,7 @@ ggsave("Loneliness Moderators (WP) - Bar Plot.pdf", height=8, width=8)
 
 
 mainEffect<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, uls_mean.z) %>%
+  dplyr::select(sample, id,  StartDateConvert, stressed_r, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, laggedStress.cz, overall_study_day, uls_mean.z) %>%
   na.omit() %>% dplyr::distinct()
 
 
@@ -330,7 +326,7 @@ uls_mean_duration<-lmer(stressed_r ~ 1 + demog_sex_recoded+
                           nAct.cz+
                           lagDur.cz*laggedStress.cz+
                           socialmedia.bp.z*uls_mean.z+socialmedia.cz*uls_mean.z+
-                          (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
+                          sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffect,
                         REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(uls_mean_duration)
 
