@@ -2,26 +2,21 @@
 title: "R Notebook"
 output: html_notebook
 ---
----
-title: "R Notebook"
-output: html_notebook
----
-
-
 
 ```{r}
 library(tidyverse)
 library(lme4)
 library(lmerTest)
 library(sjPlot)
-library(interactions)
 library(jtools)
-main_effect_updated<-read_csv("/Volumes/GoogleDrive/My Drive/Social media Sensitivity Pooled Analyses/Data Prep/modelling_data_pooled.csv")
+library(interactions)
+setwd("~/Desktop/socialmediasensitivity/Social media Sensitivity Pooled Analyses/Pooled Analysis  - Dispositions/Accepted")
+main_effect_updated<-read_csv("modelling_data_pooled_updated.csv")
 ```
 
 ```{r}
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, 
+  dplyr::select(sample,id,StartDateConvert, 
                 accepted, 
                 demog_age.z,
                 MediaUse.scaled, MediaUse.mean,
@@ -43,12 +38,23 @@ baseline_personality_sm<-lmer(accepted ~ 1 +
                                 nAct.cz+
                                 lagDur.cz*lagged_accepted.cz+
                                 MediaUse.scaled+MediaUse.mean+
-                                (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                                sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
                               REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(baseline_personality_sm)
 
+fixef(baseline_personality_sm)['MediaUse.scaled'] <- -0.0001
+sim_treat <- powerSim(baseline_personality_duration, nsim=10, test =
+                        fcompare(accepted~demog_sex_recoded+ 
+                                      demog_age.z+
+                                      surveys_per_id.z+
+                                      overall_study_day+
+                                      weekend+
+                                      nAct.cz+
+                                      lagDur.cz+lagged_accepted.cz))
+fixef(baseline_personality_duration)['socialmedia.cz'] <- -0.0001
+
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, 
+  dplyr::select(sample,id,StartDateConvert, 
                 accepted, 
                 demog_age.z,
                 socialmedia.cz, socialmedia.bp.z,
@@ -70,15 +76,31 @@ baseline_personality_duration<-lmer(accepted~ 1 +
                                       nAct.cz+
                                       lagDur.cz*lagged_accepted.cz+
                                       socialmedia.cz+socialmedia.bp.z+
-                                      (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                                      sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
                                     REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(baseline_personality_duration)
+
+library(simr)
+fixef(baseline_personality_duration)['socialmedia.cz'] <- -0.0001
+sim_treat <- powerSim(baseline_personality_duration, nsim=10, test =
+                        fcompare(accepted~demog_sex_recoded+ 
+                                      demog_age.z+
+                                      surveys_per_id.z+
+                                      overall_study_day+
+                                      weekend+
+                                      nAct.cz+
+                                      lagDur.cz+lagged_accepted.cz))
+fixef(baseline_personality_duration)['socialmedia.cz'] <- -0.0001
+sim_treat <- powerCurve(baseline_personality_duration, nsim=10, test = fcompare(accepted~1), along="id")
+
+
+tab_model(baseline_personality_duration, show.std = TRUE)
 ```
 
 
 ```{r}
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, 
+  dplyr::select(sample,id,StartDateConvert, 
                 accepted, 
                 demog_age.z,
                 MediaUse.scaled, MediaUse.mean,
@@ -102,12 +124,12 @@ extraversion_sm<-lmer(accepted ~ 1 +
                         nAct.cz+
                         lagDur.cz*lagged_accepted.cz+
                         MediaUse.mean*extraversion.z+MediaUse.scaled*extraversion.z+
-                        (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                        sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
                       REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(extraversion_sm)
 
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, 
+  dplyr::select(sample,id,StartDateConvert, 
                 accepted, 
                 demog_age.z,
                 socialmedia.cz, socialmedia.bp.z,
@@ -130,7 +152,7 @@ extraversion_duration<-lmer(accepted ~ 1 +
                               nAct.cz+
                               lagDur.cz*lagged_accepted.cz+
                               socialmedia.bp.z*extraversion.z+socialmedia.cz*extraversion.z+
-                              (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                              sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
                             REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(extraversion_duration)
 ```
@@ -138,7 +160,7 @@ summary(extraversion_duration)
 
 ```{r}
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, 
+  dplyr::select(sample,id,StartDateConvert, 
                 accepted, 
                 demog_age.z,
                 MediaUse.scaled, MediaUse.mean,
@@ -161,12 +183,12 @@ openness_sm<-lmer(accepted ~ 1 +
                     nAct.cz+
                     lagDur.cz*lagged_accepted.cz+
                     MediaUse.mean*openness.z+MediaUse.scaled*openness.z+
-                    (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                    sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
                   REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(openness_sm)
 
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, 
+  dplyr::select(sample,id,StartDateConvert, 
                 accepted, 
                 demog_age.z,
                 socialmedia.cz, socialmedia.bp.z,
@@ -189,7 +211,7 @@ openness_duration<-lmer(accepted ~ 1 +
                           nAct.cz+
                           lagDur.cz*lagged_accepted.cz+
                           socialmedia.bp.z*openness.z+socialmedia.cz*openness.z+
-                          (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                          sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
                         REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(openness_duration)
 ```
@@ -197,7 +219,7 @@ summary(openness_duration)
 
 ```{r}
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, neuroticism.z) %>%
+  dplyr::select(sample,id,StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, neuroticism.z) %>%
   na.omit() %>% dplyr::distinct()
 
 neuroticism_sm<-lmer(accepted ~ 1 +
@@ -209,12 +231,12 @@ neuroticism_sm<-lmer(accepted ~ 1 +
                        nAct.cz+
                        lagDur.cz*lagged_accepted.cz+
                        MediaUse.mean*neuroticism.z+MediaUse.scaled*neuroticism.z+
-                       (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                       sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
                      REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(neuroticism_sm)
 
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, neuroticism.z) %>%
+  dplyr::select(sample,id,StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, neuroticism.z) %>%
   na.omit() %>% dplyr::distinct()
 
 neuroticism_duration<-lmer(accepted ~ 1 +
@@ -226,14 +248,14 @@ neuroticism_duration<-lmer(accepted ~ 1 +
                              nAct.cz+
                              lagDur.cz*lagged_accepted.cz+
                              socialmedia.bp.z*neuroticism.z+socialmedia.cz*neuroticism.z+
-                             (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                             sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
                            REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(neuroticism_duration)
 ```
 
 ```{r}
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, agreeableness.z) %>%
+  dplyr::select(sample,id,StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, agreeableness.z) %>%
   na.omit() %>% dplyr::distinct()
 
 agreeableness_sm<-lmer(accepted ~ 1 +
@@ -245,7 +267,7 @@ agreeableness_sm<-lmer(accepted ~ 1 +
                          nAct.cz+
                          lagDur.cz*lagged_accepted.cz+
                          MediaUse.mean*agreeableness.z+MediaUse.scaled*agreeableness.z+
-                         (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                         sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
                        REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(agreeableness_sm)
 
@@ -266,7 +288,7 @@ ggsave("Agreeableness Moderators (BP) of Social Media Use (BP) x Accepted.pdf", 
 
 
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, agreeableness.z) %>%
+  dplyr::select(sample,id,StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, agreeableness.z) %>%
   na.omit() %>% dplyr::distinct()
 
 agreeableness_duration<-lmer(accepted ~ 1 +
@@ -278,14 +300,14 @@ agreeableness_duration<-lmer(accepted ~ 1 +
                                nAct.cz+
                                lagDur.cz*lagged_accepted.cz+
                                socialmedia.bp.z*agreeableness.z+socialmedia.cz*agreeableness.z+
-                               (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                               sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
                              REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(agreeableness_duration)
 ```
 
 ```{r}
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, conscientiousness.z) %>%
+  dplyr::select(sample,id,StartDateConvert, accepted, demog_age.z, MediaUse.scaled, MediaUse.mean, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, conscientiousness.z) %>%
   na.omit() %>% dplyr::distinct()
 
 conscientiousness_sm<-lmer(accepted ~ 1 +
@@ -297,12 +319,12 @@ conscientiousness_sm<-lmer(accepted ~ 1 +
                              nAct.cz+
                              lagDur.cz*lagged_accepted.cz+
                              MediaUse.mean*conscientiousness.z+MediaUse.scaled*conscientiousness.z+
-                             (1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
+                             sample+(1+MediaUse.scaled| id),  na.action = na.exclude, data=mainEffectPersonality,
                            REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(conscientiousness_sm)
 
 mainEffectPersonality<-main_effect_updated %>%
-  dplyr::select(id, StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, conscientiousness.z) %>%
+  dplyr::select(sample,id,StartDateConvert, accepted, demog_age.z, socialmedia.cz, socialmedia.bp.z, demog_sex_recoded, weekend, nAct.cz, surveys_per_id.z, lagDur.cz, lagged_accepted.cz, overall_study_day, conscientiousness.z) %>%
   na.omit() %>% dplyr::distinct()
 
 conscientiousness_duration<-lmer(accepted ~ 1 +
@@ -314,7 +336,7 @@ conscientiousness_duration<-lmer(accepted ~ 1 +
                                    nAct.cz+
                                    lagDur.cz*lagged_accepted.cz+
                                    socialmedia.bp.z*conscientiousness.z+socialmedia.cz*conscientiousness.z+
-                                   (1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
+                                   sample+(1+socialmedia.cz| id),  na.action = na.exclude, data=mainEffectPersonality,
                                  REML = TRUE, control = lmerControl(optimizer ="Nelder_Mead"))
 summary(conscientiousness_duration)
 ```
